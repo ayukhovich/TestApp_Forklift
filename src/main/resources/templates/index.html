@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Справочник Погрузчиков</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <button id="btnProfile" class="profile-btn">Профиль</button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-body">
+        <!-- Навигационная панель -->
+        <nav class="nav-panel">
+            <ul class="nav-menu">
+                <li><a href="#">Пользователи</a></li>
+                <li><a href="#">Уведомления и напоминания</a></li>
+                <li><a href="#">Настройки</a></li>
+                <li><a href="#">АИС ОГПА</a></li>
+                <li><a href="#" class="active">Справочник погрузчиков</a></li>
+                <li><a href="#">Резервное копирование и восстановление</a></li>
+                <li><a href="#">Справочники</a></li>
+            </ul>
+        </nav>
+
+        <!-- Список погрузчиков + Простои -->
+        <section class="forklift-list">
+            <div class="panel-header">
+                <h2>Справочник погрузчиков</h2>
+            </div>
+            
+            <!-- Панель поиска -->
+            <div class="search-panel">
+                <div class="search-row">
+                    <input type="text" id="searchNumber" placeholder="Номер погрузчика" size="20">
+                    <button id="btnSearch" class="btn btn-primary"><span class="icon icon-search"></span> Искать</button>
+                    <button id="btnReset" class="btn btn-link"><span class="icon icon-reset"></span> Сбросить фильтр</button>
+                </div>
+            </div>
+
+            <!-- Кнопка добавить -->
+            <div class="add-panel">
+                <button id="btnAdd" class="btn btn-success">Добавить</button>
+            </div>
+
+            <!-- Горизонтальный блок с таблицами -->
+            <div class="content-horizontal">
+                <!-- Блок погрузчиков -->
+                <div class="forklift-block">
+                    <div class="table-container">
+                        <table id="forkliftTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Код записи</th>
+                                    <th>Марка</th>
+                                    <th>Номер</th>
+                                    <th>Грузоподъем<br/>-ность</th>
+                                    <th>Активен</th>
+                                    <th>Время и Дата<br/>изменения</th>
+                                    <th>Пользователь</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="forkliftTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Блок простоев -->
+                <div class="downtime-block">
+                    <div class="downtime-header">
+                        <h2>Простои по погрузчику</h2>
+                        <span id="selectedForkliftInfo" class="selected-info-text">Выберите погрузчик</span>
+                    </div>
+                    <div class="downtime-actions">
+                        <button id="btnAddDowntime" class="btn btn-success" disabled>Добавить</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="downtimeTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Код<br/>записи</th>
+                                    <th>Начало</th>
+                                    <th>Окончание</th>
+                                    <th>Время<br/>простоя</th>
+                                    <th>Причина</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="downtimeTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Модальное окно для погрузчика -->
+    <div id="forkliftModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="forkliftModalTitle">Добавить погрузчик</h3>
+                <span class="modal-close" id="forkliftModalClose">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="forkliftForm">
+                    <input type="hidden" id="forkliftId">
+                    <div class="form-group">
+                        <label for="forkliftBrand">Марка:</label>
+                        <input type="text" id="forkliftBrand" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="forkliftNumber">Номер:</label>
+                        <input type="text" id="forkliftNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="forkliftLoadCapacity">Грузоподъемность:</label>
+                        <input type="number" id="forkliftLoadCapacity" step="0.001" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="forkliftActive">
+                            <input type="checkbox" id="forkliftActive" checked>
+                            Активен
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSaveForklift" class="btn btn-primary">Сохранить</button>
+                <button id="btnCancelForklift" class="btn btn-secondary">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для простоя -->
+    <div id="downtimeModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 id="downtimeModalTitle">Проблемы с погрузчиком ? опишите</h3>
+            </div>
+            <div class="modal-body">
+                <form id="downtimeForm">
+                    <input type="hidden" id="downtimeId">
+                    <input type="hidden" id="downtimeForkliftId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="downtimeStartTime">начало</label>
+                            <input type="datetime-local" id="downtimeStartTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="downtimeEndTime">окончание</label>
+                            <input type="datetime-local" id="downtimeEndTime">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="downtimeDescription">описание инцидента</label>
+                        <textarea id="downtimeDescription" rows="4"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSaveDowntime" class="btn btn-primary">Сохранить</button>
+                <button id="btnCancelDowntime" class="btn btn-secondary">Выход</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery + jQuery UI -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>
