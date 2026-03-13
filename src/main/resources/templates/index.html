@@ -139,6 +139,22 @@
         </div>
     </div>
 
+    <!-- Модальное окно подтверждения удаления погрузчика -->
+    <div id="confirmDeleteForkliftModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Подтверждение удаления</h3>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; margin: 20px 0;">Удалить погрузчик? Вы уверены?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btnConfirmDeleteForklift" class="btn btn-danger">Удалить</button>
+                <button id="btnCancelDeleteForklift" class="btn btn-secondary">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Модальное окно для простоя -->
     <div id="downtimeModal" class="modal">
         <div class="modal-content modal-lg">
@@ -171,6 +187,54 @@
             </div>
         </div>
     </div>
+
+    <!-- Модальное окно подтверждения удаления простоя -->
+    <div id="confirmDeleteDowntimeModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Подтверждение удаления</h3>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; margin: 20px 0;">Удалить информацию о простое? Вы уверены?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btnConfirmDeleteDowntime" class="btn btn-danger">Удалить</button>
+                <button id="btnCancelDeleteDowntime" class="btn btn-secondary">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно успеха -->
+    <div id="successModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="justify-content: center;">
+                <h3>Успешно</h3>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage" style="text-align: center; margin: 20px 0;"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCloseSuccessModal" class="btn btn-primary">ОК</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно ошибки -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="justify-content: center;">
+                <h3 style="color: darkred;">Ошибка</h3>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage" style="text-align: center; margin: 20px 0;"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCloseErrorModal" class="btn btn-primary">ОК</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery + jQuery UI -->
 
     <!-- jQuery + jQuery UI -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

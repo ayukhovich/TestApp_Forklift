@@ -51,6 +51,14 @@ $(document).ready(function() {
         $('#btnCancelDowntime').on('click', () => closeModal('#downtimeModal'));
         $('#btnSaveDowntime').on('click', handleSaveDowntimeFromModal);
 
+        // Модальное окно подтверждения удаления простоя
+        $('#btnConfirmDeleteDowntime').on('click', confirmDeleteDowntime);
+        $('#btnCancelDeleteDowntime').on('click', cancelDeleteDowntime);
+
+        // Модальное окно подтверждения удаления погрузчика
+        $('#btnConfirmDeleteForklift').on('click', confirmDeleteForklift);
+        $('#btnCancelDeleteForklift').on('click', cancelDeleteForklift);
+
         // Закрытие модальных окон по клику вне
         $('.modal').on('click', function(e) {
             if ($(e.target).hasClass('modal')) {
@@ -203,11 +211,11 @@ $(document).ready(function() {
             return;
         }
 
-        downtimes.forEach(function(downtime) {
+        downtimes.forEach(function(downtime, index) {
             const tr = $('<tr>')
                 .data('id', downtime.id)
                 .attr('data-id', downtime.id)
-                .append($('<td>').text(downtime.id))
+                .append($('<td>').text(index + 1))
                 .append($('<td>').text(formatDateTime(downtime.startTime)))
                 .append($('<td>').text(downtime.endTime ? formatDateTime(downtime.endTime) : '—'))
                 .append($('<td>').text(downtime.calculatedDowntime || '—'))
@@ -306,7 +314,7 @@ $(document).ready(function() {
         const title = $('#downtimeModalTitle');
 
         if (mode === 'add') {
-            title.text('Добавить простой');
+            title.text('Проблемы с погрузчиком ? Опишите');
             $('#downtimeId').val('');
             $('#downtimeForkliftId').val(state.selectedForkliftId);
             $('#downtimeForm')[0].reset();
@@ -372,11 +380,10 @@ $(document).ready(function() {
     // Удаление погрузчика
     function handleDeleteForklift() {
         if (!state.selectedForkliftId) return;
+        $('#confirmDeleteForkliftModal').addClass('show');
+    }
 
-        if (!confirm('Удалить погрузчик? Вы уверены?')) {
-            return;
-        }
-
+    function confirmDeleteForklift() {
         $.ajax({
             url: API_FORKLIFTS + '/' + state.selectedForkliftId,
             method: 'DELETE',
@@ -387,12 +394,18 @@ $(document).ready(function() {
                 $('#selectedForkliftInfo').text('Выберите погрузчик');
                 loadForklifts();
                 updateButtonStates();
+                $('#confirmDeleteForkliftModal').removeClass('show');
                 showSuccess('Погрузчик удален');
             },
             error: function(xhr) {
                 showError(xhr.responseJSON?.error || 'Ошибка удаления');
             }
         });
+    }
+
+    function cancelDeleteForklift() {
+        $('#confirmDeleteForkliftModal').removeClass('show');
+        state.selectedForkliftId = null;
     }
 
     // Сохранение простоя из модального окна
@@ -432,11 +445,10 @@ $(document).ready(function() {
     // Удаление простоя
     function handleDeleteDowntime() {
         if (!state.selectedDowntimeId) return;
+        $('#confirmDeleteDowntimeModal').addClass('show');
+    }
 
-        if (!confirm('Удалить информацию о простое? Вы уверены?')) {
-            return;
-        }
-
+    function confirmDeleteDowntime() {
         $.ajax({
             url: API_DOWNTIMES + '/' + state.selectedDowntimeId,
             method: 'DELETE',
@@ -444,6 +456,7 @@ $(document).ready(function() {
                 state.selectedDowntimeId = null;
                 loadDowntimes(state.selectedForkliftId);
                 updateButtonStates();
+                $('#confirmDeleteDowntimeModal').removeClass('show');
                 showSuccess('Простой удален');
             },
             error: function(xhr) {
@@ -452,19 +465,9 @@ $(document).ready(function() {
         });
     }
 
-    // Обработка кнопки "Сохранить" (режим редактирования в таблице)
-    function handleSaveForklift() {
-        // Здесь можно добавить inline редактирование
-        showError('Используйте модальное окно для редактирования');
-    }
-
-    // Обработка кнопки "Отменить"
-    function handleCancelForklift() {
-        if (!confirm('Не сохранять внесенные изменения? Вы уверены?')) {
-            return;
-        }
-        // Сброс изменений
-        loadForklifts();
+    function cancelDeleteDowntime() {
+        $('#confirmDeleteDowntimeModal').removeClass('show');
+        state.selectedDowntimeId = null;
     }
 
     // Форматирование даты и времени
@@ -491,12 +494,21 @@ $(document).ready(function() {
 
     // Показ сообщения об успехе
     function showSuccess(message) {
-        // Можно реализовать более красивый toast
-        alert(message);
+        $('#successMessage').text(message);
+        $('#successModal').addClass('show');
     }
+
+    $('#btnCloseSuccessModal').on('click', function() {
+        $('#successModal').removeClass('show');
+    });
 
     // Показ сообщения об ошибке
     function showError(message) {
-        alert(message);
+        $('#errorMessage').text(message);
+        $('#errorModal').addClass('show');
     }
+
+    $('#btnCloseErrorModal').on('click', function() {
+        $('#errorModal').removeClass('show');
+    });
 });

@@ -11,7 +11,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        format_sql: false
 
   sql:
     init:
@@ -22,7 +22,6 @@ spring:
   thymeleaf:
     cache: false
 
-# Настройки приложения
 app:
   pagination:
     default-size: 20
@@ -31,3 +30,15 @@ app:
 
 server:
   port: 8080
+
+logging:
+  file:
+    name: logs/application.log
+    max-size: 10MB
+    max-history: 10
+  level:
+    root: INFO
+    com.example.forklift: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -11,9 +11,9 @@ services:
     logging:
       options:
         max-size: 10m
-        max-file: "3"
+        max-file: "4"
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
       - ./src/main/resources/load-data.sql:/docker-entrypoint-initdb.d/load-data.sql
@@ -26,8 +26,10 @@ services:
   app:
     build: .
     restart: always
-    ports:
-      - "80:8080"
+    expose:
+      - "8080"
+    volumes:
+      - ./java-logs:/app/logs
     depends_on:
       postgres:
         condition: service_healthy
@@ -35,3 +37,21 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/forkliftdb
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+      - LOGGING_FILE=/app/logs/application.log
+      - SERVER_TOMCAT_REMOTE_ADDR_X_FORWARDED=true
+      - TZ=Europe/Minsk
+    command: ["java", "-Duser.timezone=Europe/Minsk", "-jar", "app.jar"]
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
